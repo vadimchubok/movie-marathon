@@ -1,0 +1,6 @@
+django
+black
+pillow
+python-dotenv
+cloudinary
+django-cloudinary-storage
