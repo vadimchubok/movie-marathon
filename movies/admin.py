@@ -1,3 +1,14 @@
 from django.contrib import admin
+from .models import Movie, Genre, UserRating
 
-# Register your models here.
+
+@admin.register(Movie)
+class MovieAdmin(admin.ModelAdmin):
+    list_display = ("title", "year", "imdb_rating")
+    list_filter = ("year",)
+    search_fields = ("title",)
+
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ("name",)
+    search_fields = ("name",)

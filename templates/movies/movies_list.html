@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+  <style>
+      /* Movie card hover */
+      .movie-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .movie-card-wrapper:hover .movie-card {
+          transform: scale(1.06);
+          box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+          z-index: 2;
+      }
+
+      /* Sticky filters */
+      @media (min-width: 768px) {
+          aside {
+              position: sticky;
+              top: 90px;
+          }
+      }
+  </style>
+{% endblock %}
+
+{% block content %}
+
+  <!-- SEARCH + SORT -->
+  <form method="get" class="row align-items-center mb-4 g-2">
+
+    <!-- SEARCH -->
+    <div class="col-md-6 col-lg-5">
+      <div class="input-group">
+        <span class="input-group-text">🔍</span>
+        <input type="text"
+               name="q"
+               class="form-control"
+               placeholder="Search movies..."
+               value="{{ request.GET.q }}">
+      </div>
+    </div>
+
+    <!-- SORT -->
+    <div class="col-md-3 ms-auto">
+      <select name="sort" class="form-select">
+        <option value="">Sort by</option>
+        <option value="title">Alphabetical</option>
+        <option value="year">Release year</option>
+        <option value="rating">Rating</option>
+      </select>
+    </div>
+
+    <div class="col-md-1">
+      <button class="btn btn-primary w-100">OK</button>
+    </div>
+
+  </form>
+
+  <div class="row">
+
+    <!-- FILTERS -->
+    <aside class="col-12 col-md-3 col-lg-2">
+
+      <form method="get" class="card p-3 mb-4">
+
+        <h5 class="mb-3">Filters</h5>
+
+        <!-- GENRES -->
+        <div class="mb-3">
+          <strong>Genres</strong>
+          {% for genre in genres %}
+            <div class="form-check">
+              <input class="form-check-input"
+                     type="checkbox"
+                     name="genre"
+                     value="{{ genre.id }}"
+                     id="genre{{ genre.id }}">
+              <label class="form-check-label" for="genre{{ genre.id }}">
+                {{ genre.name }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- YEAR -->
+        <div class="mb-3">
+          <strong>Release year</strong>
+
+          <div class="d-flex justify-content-between">
+            <small id="yearValue">Any</small>
+            <small>1950 – 2025</small>
+          </div>
+
+          <input type="range"
+                 class="form-range"
+                 name="year"
+                 min="1950"
+                 max="2025"
+                 step="1"
+                 value="{{ request.GET.year|default:2025 }}"
+                 oninput="document.getElementById('yearValue').innerText = this.value">
+        </div>
+
+        <button class="btn btn-primary w-100">
+          Apply
+        </button>
+
+      </form>
+
+    </aside>
+
+    <!-- MOVIES -->
+    <main class="col-12 col-md-9 col-lg-10">
+
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+        {% for movie in movies_list %}
+          <div class="col movie-card-wrapper">
+
+            <a href="{% url 'movies:movie_detail' movie.id %}"
+               class="text-decoration-none text-dark">
+
+              <div class="card h-100 shadow-sm movie-card">
+
+                <img src="{{ movie.poster_url }}"
+                     class="card-img-top"
+                     alt="{{ movie.title }}">
+
+                <div class="card-body">
+                  <h5 class="card-title">{{ movie.title }}</h5>
+
+                  <p class="card-text mb-1">
+                    <strong>{{ movie.year }}</strong>
+                  </p>
+
+                  <p class="card-text text-muted">
+                    {% for genre in movie.genre.all %}
+                      <span class="badge bg-secondary">
+                      {{ genre.name }}
+                    </span>
+                    {% endfor %}
+                  </p>
+                </div>
+
+              </div>
+
+            </a>
+
+          </div>
+        {% endfor %}
+
+      </div>
+
+    </main>
+
+  </div>
+
+{% endblock %}
+
+{% block pagination %}
+  {% if is_paginated %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center mt-4">
+
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page_obj.previous_page_number }}">
+              &laquo; Prev
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">&laquo; Prev</span>
+          </li>
+        {% endif %}
+
+        <li class="page-item disabled">
+      <span class="page-link">
+        Page {{ page_obj.number }} of {{ paginator.num_pages }}
+      </span>
+        </li>
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link"
+               href="?page={{ page_obj.next_page_number }}">
+              Next &raquo;
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Next &raquo;</span>
+          </li>
+        {% endif %}
+
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Marathon</title>
+  <!-- Bootstrap CSS -->
+  <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+  />
+</head>
+<body>
+
+{% block nav_bar %}
+  {% include 'includes/nav_bar.html' %}
+{% endblock %}
+
+<main class="container-fluid mt-4 px-5">
+  {% block content %}
+  {% endblock %}
+  {% block pagination %}
+  {% endblock %}
+</main>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-Vk7DDgHz5k9XrQ7Q6V0+6f5Z0KDFXW7yR5u5s4sY5Z9fX5N6jQ1Q6f3R5v7y8Q"
+    crossorigin="anonymous">
+</script>
+
+</body>
+</html>

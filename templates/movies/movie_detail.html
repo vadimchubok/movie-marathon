@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+  <div class="row">
+
+    <!-- POSTER -->
+    <div class="col-md-4">
+      <img src="{{ movie.poster_url }}"
+           class="img-fluid rounded shadow-sm">
+    </div>
+
+    <!-- INFO -->
+    <div class="col-md-8">
+
+      <h1>{{ movie.title }}</h1>
+
+      <p><strong>Year:</strong> {{ movie.year }}</p>
+
+      <p>
+        {% for genre in movie.genre.all %}
+          <span class="badge bg-secondary">{{ genre.name }}</span>
+        {% endfor %}
+      </p>
+
+      <p>
+        <strong>IMDB:</strong>
+        ⭐ {{ movie.imdb_rating|default:"N/A" }}/10
+      </p>
+
+      {% if avg_rating %}
+        <p>
+          <strong>User rating:</strong>
+          ⭐ {{ avg_rating|floatformat:1 }}/10
+        </p>
+      {% endif %}
+
+      <p>{{ movie.description }}</p>
+
+      <hr>
+
+      <!-- USER RATING -->
+      {% if user.is_authenticated %}
+        <form method="post" class="mb-3">
+          {% csrf_token %}
+          <strong>Your rating:</strong>
+
+          <div class="d-flex gap-1 mt-1">
+            {% for i in "12345678910"|make_list %}
+              <button type="submit"
+                      name="rating"
+                      value="{{ forloop.counter }}"
+                      class="btn btn-sm
+                      {% if user_rating and user_rating.value >= forloop.counter %}
+                        btn-warning
+                      {% else %}
+                        btn-outline-secondary
+                      {% endif %}">
+                ★
+              </button>
+            {% endfor %}
+          </div>
+
+          {% if user_rating %}
+            <small class="text-muted">
+              You rated: {{ user_rating.value }}/10
+            </small>
+          {% endif %}
+        </form>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- REVIEWS -->
+  <hr>
+  <h4>Reviews & Comments</h4>
+
+  {% if user.is_authenticated %}
+    <form method="post" class="mb-4">
+      {% csrf_token %}
+
+      <textarea name="text"
+                class="form-control mb-2"
+                rows="4"
+                placeholder="Write your review or comment..."></textarea>
+
+      <div class="form-check mb-2">
+        <input class="form-check-input"
+               type="checkbox"
+               name="is_review"
+               id="isReview">
+        <label class="form-check-label" for="isReview">
+          This is a full review
+        </label>
+      </div>
+
+      <button class="btn btn-primary">Post</button>
+    </form>
+  {% else %}
+    <p>
+      <a href="{% url 'login' %}">Login</a> to write a review
+    </p>
+  {% endif %}
+
+  {% for review in movie.reviews.all %}
+    <div class="mb-3 p-3 rounded
+      {% if review.author.id in reviewer_ids %}
+        bg-warning bg-opacity-10 border border-warning
+      {% else %}
+        bg-light
+      {% endif %}
+    ">
+
+      <div class="d-flex align-items-center gap-2">
+        <strong>{{ review.author.username }}</strong>
+
+        {% if review.author.id in reviewer_ids %}
+          <span class="badge bg-warning text-dark">
+            Reviewer
+          </span>
+        {% endif %}
+
+        <small class="text-muted">
+          {{ review.created_at|date:"Y-m-d H:i" }}
+        </small>
+      </div>
+
+      {% if review.is_review %}
+        <small class="text-primary fw-bold">Review</small>
+      {% endif %}
+
+      <p class="mb-1 mt-1">{{ review.text }}</p>
+    </div>
+  {% empty %}
+    <p class="text-muted">No reviews yet.</p>
+  {% endfor %}
+
+</div>
+{% endblock %}
