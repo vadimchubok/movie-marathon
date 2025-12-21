@@ -2,7 +2,6 @@
 
 {% block extra_css %}
   <style>
-      /* Movie card hover */
       .movie-card {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
       }
@@ -13,7 +12,6 @@
           z-index: 2;
       }
 
-      /* Sticky filters */
       @media (min-width: 768px) {
           aside {
               position: sticky;
@@ -44,9 +42,9 @@
     <div class="col-md-3 ms-auto">
       <select name="sort" class="form-select">
         <option value="">Sort by</option>
-        <option value="title">Alphabetical</option>
-        <option value="year">Release year</option>
-        <option value="rating">Rating</option>
+        <option value="title" {% if selected_sort == "title" %}selected{% endif %}>Alphabetical</option>
+        <option value="year" {% if selected_sort == "year" %}selected{% endif %}>Release year</option>
+        <option value="rating" {% if selected_sort == "rating" %}selected{% endif %}>Rating</option>
       </select>
     </div>
 
@@ -63,9 +61,12 @@
 
       <form method="get" class="card p-3 mb-4">
 
+        <!-- keep search & sort -->
+        <input type="hidden" name="q" value="{{ request.GET.q }}">
+        <input type="hidden" name="sort" value="{{ selected_sort }}">
+
         <h5 class="mb-3">Filters</h5>
 
-        <!-- GENRES -->
         <div class="mb-3">
           <strong>Genres</strong>
           {% for genre in genres %}
@@ -74,10 +75,9 @@
                      type="checkbox"
                      name="genre"
                      value="{{ genre.id }}"
-                     id="genre{{ genre.id }}">
-              <label class="form-check-label" for="genre{{ genre.id }}">
-                {{ genre.name }}
-              </label>
+                     id="genre{{ genre.id }}"
+                     {% if genre.id|stringformat:"s" in selected_genres %}checked{% endif %}>
+              <label class="form-check-label" for="genre{{ genre.id }}">{{ genre.name }}</label>
             </div>
           {% endfor %}
         </div>
@@ -85,9 +85,14 @@
         <!-- YEAR -->
         <div class="mb-3">
           <strong>Release year</strong>
-
           <div class="d-flex justify-content-between">
-            <small id="yearValue">Any</small>
+            <small id="yearValue">
+              {% if selected_year %}
+                {{ selected_year }}
+              {% else %}
+                Any
+              {% endif %}
+            </small>
             <small>1950 – 2025</small>
           </div>
 
@@ -97,19 +102,19 @@
                  min="1950"
                  max="2025"
                  step="1"
-                 value="{{ request.GET.year|default:2025 }}"
+                 value="{{ selected_year|default:2025 }}"
                  oninput="document.getElementById('yearValue').innerText = this.value">
         </div>
 
-        <button class="btn btn-primary w-100">
-          Apply
-        </button>
+        <div class="d-flex gap-2 mt-2">
+          <button class="btn btn-primary flex-grow-1">Apply</button>
+          <a href="{% url 'movies:movie_list' %}" class="btn btn-secondary flex-grow-1">Reset filters</a>
+        </div>
 
       </form>
 
     </aside>
 
-    <!-- MOVIES -->
     <main class="col-12 col-md-9 col-lg-10">
 
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
@@ -117,29 +122,28 @@
         {% for movie in movies_list %}
           <div class="col movie-card-wrapper">
 
-            <a href="{% url 'movies:movie_detail' movie.id %}"
-               class="text-decoration-none text-dark">
+            <a href="{% url 'movies:movie_detail' movie.id %}" class="text-decoration-none text-dark">
 
               <div class="card h-100 shadow-sm movie-card">
 
-                <img src="{{ movie.poster_url }}"
-                     class="card-img-top"
-                     alt="{{ movie.title }}">
+                <img src="{{ movie.poster_url }}" class="card-img-top" alt="{{ movie.title }}">
 
                 <div class="card-body">
+
                   <h5 class="card-title">{{ movie.title }}</h5>
 
-                  <p class="card-text mb-1">
-                    <strong>{{ movie.year }}</strong>
-                  </p>
+                  <p class="card-text mb-1"><strong>{{ movie.year }}</strong></p>
+
+                  {% if movie.avg_rating %}
+                    <p class="mb-1 text-warning">⭐ {{ movie.avg_rating|floatformat:1 }}/10</p>
+                  {% endif %}
 
                   <p class="card-text text-muted">
                     {% for genre in movie.genre.all %}
-                      <span class="badge bg-secondary">
-                      {{ genre.name }}
-                    </span>
+                      <span class="badge bg-secondary">{{ genre.name }}</span>
                     {% endfor %}
                   </p>
+
                 </div>
 
               </div>
@@ -147,6 +151,8 @@
             </a>
 
           </div>
+        {% empty %}
+          <p class="text-muted">No movies found.</p>
         {% endfor %}
 
       </div>
@@ -165,33 +171,31 @@
         {% if page_obj.has_previous %}
           <li class="page-item">
             <a class="page-link"
-               href="?page={{ page_obj.previous_page_number }}">
+               href="?
+
+                   {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
               &laquo; Prev
             </a>
           </li>
         {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">&laquo; Prev</span>
-          </li>
+          <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
         {% endif %}
 
         <li class="page-item disabled">
-      <span class="page-link">
-        Page {{ page_obj.number }} of {{ paginator.num_pages }}
-      </span>
+          <span class="page-link">Page {{ page_obj.number }} of {{ paginator.num_pages }}</span>
         </li>
 
         {% if page_obj.has_next %}
           <li class="page-item">
             <a class="page-link"
-               href="?page={{ page_obj.next_page_number }}">
+               href="?
+
+                   {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
               Next &raquo;
             </a>
           </li>
         {% else %}
-          <li class="page-item disabled">
-            <span class="page-link">Next &raquo;</span>
-          </li>
+          <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
         {% endif %}
 
       </ul>

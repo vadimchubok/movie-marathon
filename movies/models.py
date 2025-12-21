@@ -1,5 +1,4 @@
 from cloudinary.models import CloudinaryField
-from cloudinary.utils import cloudinary_url
 from django.conf import settings
 from django.db import models
 
@@ -28,6 +27,9 @@ class Movie(models.Model):
         if self.poster:
             return self.poster.url
         return ""
+
+    class Meta:
+        ordering = ["-title"]
 
     def __str__(self):
         return self.title

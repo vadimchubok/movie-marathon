@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container py-4" style="max-width: 600px;">
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center">
+        <h3 class="mb-3">Are you sure you want to delete "{{ marathon.title }}"?</h3>
+        <form method="post">
+          {% csrf_token %}
+          <button class="btn btn-danger me-2">Yes, delete</button>
+          <a href="{% url 'marathons:detail' marathon.id %}" class="btn btn-secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
