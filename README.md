@@ -52,8 +52,8 @@ python manage.py runserver
 
 | Username  | Password    |
 | --------- | ----------- |
-| Bob(No permisions until you create 10 comments) | 123qweAA |
-| Jane(All permissions (including creating parathons) ) | 123qweAA |
+| Bob (No permisions until you create 10 comments) | 123qweAA |
+| Jane (All permissions (including creating parathons) ) | 123qweAA |
 
 ---
 
@@ -116,5 +116,4 @@ movie-marathon/
 ---
 
 ## License
-
-MIT License
+This project does not have a specific license at the moment. All rights reserved by the author.
