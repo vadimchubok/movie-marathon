@@ -1,20 +1,14 @@
 import csv
 import ast
-import uuid
 from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-import cloudinary.uploader
-from cloudinary.utils import cloudinary_url
-
 from movies.models import Movie, Genre
 
 BASE_DIR = Path(settings.BASE_DIR)
-CSV_PATH = BASE_DIR / "films_translated.csv"  # твій CSV
-IMAGES_DIR = BASE_DIR / "films"          # папка з постерами
-
+CSV_PATH = BASE_DIR / "films.csv"
 
 def clean_year(value):
     try:
@@ -25,9 +19,24 @@ def clean_year(value):
         pass
     return None
 
+def url_to_public_id(url: str) -> str:
+    if not url:
+        return ""
+    import urllib.parse
+    path = urllib.parse.urlparse(url).path
+    parts = path.split('/')
+    try:
+        idx = parts.index('movies')
+        filename = parts[idx + 1]
+        public_id = f"movies/{filename.rsplit('.', 1)[0]}"
+        return public_id
+    except ValueError:
+        return ""
+    except IndexError:
+        return ""
 
 class Command(BaseCommand):
-    help = "Import movies and genres from CSV (images + genres) with CloudinaryField"
+    help = "Import movies from CSV with Cloudinary URL and save correct public_id"
 
     def handle(self, *args, **options):
         self.stdout.write("🧹 Clearing existing Movies and Genres...")
@@ -57,32 +66,17 @@ class Command(BaseCommand):
                     except ValueError:
                         rating = None
 
+                image_url = row.get("image", "").strip()
+                public_id = url_to_public_id(image_url)
+
                 movie = Movie.objects.create(
                     title=title,
                     year=year,
                     description=row.get("description") or "",
                     imdb_rating=rating,
+                    poster=public_id
                 )
-                self.stdout.write(f"✅ Movie created: {title}")
-
-                # ===== POSTER =====
-                image_name = row.get("image")
-                image_path = IMAGES_DIR / image_name if image_name else None
-                if image_path and image_path.exists():
-                    ext = image_path.suffix.lower()
-                    unique_name = f"{uuid.uuid4()}{ext}"  # унікальне ім'я
-
-                    upload_result = cloudinary.uploader.upload(
-                        str(image_path),
-                        folder="movies"
-                    )
-
-                    movie.poster = upload_result["public_id"]
-                    movie.save()
-
-                    # Правильний URL
-                    url, options = cloudinary_url(movie.poster)
-                    self.stdout.write(f"🖼 Poster uploaded: {url}")
+                self.stdout.write(f"✅ Movie created: {title} (poster: {public_id})")
 
                 # ===== GENRES =====
                 genres = []

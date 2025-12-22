@@ -23,9 +23,9 @@ class Movie(models.Model):
     description = models.TextField(blank=True, null=True)
 
     @property
-    def poster_url(self: "Movie") -> str:
-        if self.poster:
-            return self.poster.url
+    def poster_url(self):
+        if self.poster and hasattr(self.poster, 'url'):
+            return str(self.poster.url)
         return ""
 
     class Meta:
