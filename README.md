@@ -37,8 +37,25 @@ venv\Scripts\activate   # on Windows
 source venv/bin/activate # on macOS/Linux
 pip install -r requirements.txt
 ```
+---
 
-7. Run the project:
+## Database Setup
+
+After cloning the repository and activating your virtual environment, run the following commands to set up the database:
+
+```bash
+# Create new migrations based on models (if needed)
+python manage.py makemigrations
+
+# Apply migrations to the database
+python manage.py migrate
+
+# Populate the database with movies and genres from CSV
+python manage.py add_to_base
+```
+
+## Run the project
+
 
 ```bash
 python manage.py runserver
