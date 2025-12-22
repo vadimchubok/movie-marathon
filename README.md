@@ -16,9 +16,7 @@ Movie Marathon is a web application for browsing and rating movies, as well as o
 
 ## How to Run
 
-1. Fork the repository on GitHub
-2. Clone your forked repository
-
+1. Clone the repository from GitHub
 ```bash
 git clone your-forked-repo-link
 ```
