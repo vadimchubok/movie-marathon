@@ -1,13 +1,20 @@
 from django.urls import path
-from . import views
+from .views import (
+    MarathonListView,
+    MarathonCreateView,
+    MarathonDetailView,
+    MarathonUpdateView,
+    MarathonDeleteView,
+    join_marathon,
+)
 
 app_name = "marathons"
 
 urlpatterns = [
-    path("", views.marathon_list, name="list"),
-    path("create/", views.create_marathon, name="create"),
-    path("<int:pk>/", views.marathon_detail, name="detail"),
-    path("<int:marathon_id>/join/", views.join_marathon, name="join"),
-    path("<int:pk>/edit/", views.update_marathon, name="edit"),
-    path("<int:pk>/delete/", views.delete_marathon, name="delete"),
+    path("", MarathonListView.as_view(), name="list"),
+    path("create/", MarathonCreateView.as_view(), name="create"),
+    path("<int:pk>/", MarathonDetailView.as_view(), name="detail"),
+    path("<int:pk>/edit/", MarathonUpdateView.as_view(), name="edit"),
+    path("<int:pk>/delete/", MarathonDeleteView.as_view(), name="delete"),
+    path("<int:marathon_id>/join/", join_marathon, name="join"),
 ]

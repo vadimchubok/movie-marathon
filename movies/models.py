@@ -6,7 +6,7 @@ from django.db import models
 class Genre(models.Model):
     name = models.CharField(max_length=200, unique=True)
 
-    def __str__(self):
+    def __str__(self: "Genre") -> str:
         return self.name
 
 
@@ -23,7 +23,7 @@ class Movie(models.Model):
     description = models.TextField(blank=True, null=True)
 
     @property
-    def poster_url(self):
+    def poster_url(self: "Movie") -> str:
         if self.poster:
             return self.poster.url
         return ""
@@ -31,7 +31,7 @@ class Movie(models.Model):
     class Meta:
         ordering = ["-title"]
 
-    def __str__(self):
+    def __str__(self: "Movie") -> str:
         return self.title
 
 
@@ -67,5 +67,5 @@ class Review(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
-    def __str__(self):
+    def __str__(self: "Review") -> str:
         return f"{self.author} – {self.movie}"

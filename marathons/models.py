@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.conf import settings
 from django.db import models
 
@@ -6,9 +7,9 @@ from movies.models import Movie
 
 class Marathon(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField()
-    start_date = models.DateTimeField()
-    total_duration = models.IntegerField()
+    description = models.TextField(blank=True)
+    start_date = models.DateTimeField(default=timezone.now)
+    total_duration = models.IntegerField(default=0)
 
     curator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -16,7 +17,7 @@ class Marathon(models.Model):
         related_name="curated_marathons",
     )
 
-    movies = models.ManyToManyField(Movie)
+    movies = models.ManyToManyField(Movie, blank=True)
 
     participants = models.ManyToManyField(
         settings.AUTH_USER_MODEL,

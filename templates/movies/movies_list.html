@@ -173,6 +173,7 @@
             <a class="page-link"
                href="?
 
+
                    {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}">
               &laquo; Prev
             </a>
@@ -189,7 +190,6 @@
           <li class="page-item">
             <a class="page-link"
                href="?
-
                    {% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}">
               Next &raquo;
             </a>

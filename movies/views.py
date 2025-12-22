@@ -1,8 +1,10 @@
+from typing import Any, Dict
+
 from django.core.paginator import Paginator
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, QuerySet
 from django.shortcuts import redirect
 from django.views.generic import DetailView, ListView
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.views.decorators.http import require_GET
 
 from movies.models import Movie, UserRating, Genre, Review
@@ -15,7 +17,7 @@ class MovieListView(ListView):
     context_object_name = "movies_list"
     paginate_by = 32
 
-    def get_queryset(self):
+    def get_queryset(self: "MovieListView") -> QuerySet[Movie]:
         movies_queryset = (
             Movie.objects
             .prefetch_related("genre")
@@ -24,7 +26,8 @@ class MovieListView(ListView):
 
         search_query = self.request.GET.get("q")
         if search_query:
-            movies_queryset = movies_queryset.filter(title__icontains=search_query)
+            movies_queryset = movies_queryset.filter(
+                title__icontains=search_query)
 
         selected_genres = self.request.GET.getlist("genre")
         if selected_genres:
@@ -39,7 +42,6 @@ class MovieListView(ListView):
             except ValueError:
                 pass
 
-        # ↕️ SORTING
         sort_option = self.request.GET.get("sort")
         if sort_option == "title":
             movies_queryset = movies_queryset.order_by("title")
@@ -50,7 +52,9 @@ class MovieListView(ListView):
 
         return movies_queryset
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self: "MovieListView",
+                         **kwargs: Any
+                         ) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         context["genres"] = Genre.objects.all()
@@ -67,13 +71,16 @@ class MovieDetailView(DetailView):
 
     COMMENTS_PER_PAGE = 10
 
-    def post(self, request, *args, **kwargs):
+    def post(self: "MovieDetailView",
+             request: HttpRequest,
+             *args: Any,
+             **kwargs: Any
+             ) -> HttpResponse:
         movie = self.get_object()
 
         if not request.user.is_authenticated:
             return redirect("login")
 
-        # rating
         rating_value = request.POST.get("rating")
         if rating_value:
             UserRating.objects.update_or_create(
@@ -82,7 +89,6 @@ class MovieDetailView(DetailView):
                 defaults={"value": int(rating_value)},
             )
 
-        # review
         review_text = request.POST.get("text", "").strip()
         if review_text:
             is_review = request.POST.get("is_review") == "on"
@@ -94,10 +100,11 @@ class MovieDetailView(DetailView):
             )
             update_user_status(request.user)
 
-        # PRG pattern
         return redirect("movies:movie_detail", pk=movie.pk)
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self: "MovieDetailView",
+                         **kwargs: Any
+                         ) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         movie = self.get_object()
 
@@ -106,7 +113,8 @@ class MovieDetailView(DetailView):
                 author=self.request.user, movie=movie
             ).first()
 
-        context["avg_rating"] = UserRating.objects.filter(movie=movie).aggregate(
+        context["avg_rating"] = UserRating.objects.filter(
+            movie=movie).aggregate(
             avg=Avg("value")
         )["avg"]
 
@@ -118,8 +126,6 @@ class MovieDetailView(DetailView):
             .values_list("author", flat=True)
         )
         context["reviewer_ids"] = set(frequent_reviewers)
-
-        # ⭐ STAR RANGE
         context["rating_range"] = range(1, 11)
 
         reviews_queryset = (
@@ -142,7 +148,7 @@ class MovieDetailView(DetailView):
 
 
 @require_GET
-def movie_search(request):
+def movie_search(request: HttpRequest) -> HttpResponse:
     search_query = request.GET.get("q", "").strip()
 
     if len(search_query) < 2:
