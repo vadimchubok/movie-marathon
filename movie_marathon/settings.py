@@ -1,6 +1,8 @@
 import os
+import cloudinary
 from pathlib import Path
 from dotenv import load_dotenv
+
 
 
 load_dotenv()
@@ -90,7 +92,9 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
+cloudinary.config(
+    cloud_name="dkfdxjbww"
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
