@@ -1,6 +1,6 @@
 # Movie Marathon
 
-Movie Marathon is a web application for browsing and rating movies, as well as organizing movie nights. Users can create accounts, view movies, leave ratings, write comments, and schedule movie marathons with friends.
+Movie Marathon is a web application for browsing and rating movies, as well as organizing movie nights. Users can create accounts, view movies, leave ratings, write comments, and schedule movie marathons with friends. This project was developed using Python 3.13 and Django 6.0.
 
 ---
 
