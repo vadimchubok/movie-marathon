@@ -4,6 +4,12 @@ Movie Marathon is a web application for browsing and rating movies, as well as o
 
 ---
 
+## Live Demo
+
+You can try the app online here: [Movie Marathon on Render](https://movie-marathon.onrender.com)
+
+---
+
 ## Features
 
 * User registration and login
