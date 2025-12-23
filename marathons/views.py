@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import (LoginRequiredMixin,
                                         UserPassesTestMixin)
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import (
     ListView,
@@ -13,6 +13,7 @@ from django.views.generic import (
 
 from marathons.forms import MarathonForm
 from marathons.models import Marathon, MarathonTicket
+from movies.models import Movie
 
 
 class MarathonListView(LoginRequiredMixin, ListView):
@@ -121,3 +122,20 @@ def join_marathon(request: HttpRequest,
     )
 
     return redirect("marathons:detail", pk=marathon.id)
+
+@login_required
+def marathon_movie_search(request):
+    q = request.GET.get("q", "").strip()
+
+    if len(q) < 2:
+        return JsonResponse([], safe=False)
+
+    movies = (
+        Movie.objects
+        .filter(title__icontains=q)
+        .order_by("title", "year")
+        .only("id", "title", "year")[:20]  # ліміт для швидкості
+    )
+
+    data = [{"id": m.id, "title": m.title, "year": m.year} for m in movies]
+    return JsonResponse(data, safe=False)

@@ -6,6 +6,7 @@ from .views import (
     MarathonUpdateView,
     MarathonDeleteView,
     join_marathon,
+    marathon_movie_search,
 )
 
 app_name = "marathons"
@@ -17,4 +18,5 @@ urlpatterns = [
     path("<int:pk>/edit/", MarathonUpdateView.as_view(), name="edit"),
     path("<int:pk>/delete/", MarathonDeleteView.as_view(), name="delete"),
     path("<int:marathon_id>/join/", join_marathon, name="join"),
+    path("search_movies/", marathon_movie_search, name="search_movies"),
 ]

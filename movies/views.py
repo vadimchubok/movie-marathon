@@ -17,40 +17,34 @@ class MovieListView(ListView):
     context_object_name = "movies_list"
     paginate_by = 32
 
-    def get_queryset(self: "MovieListView") -> QuerySet[Movie]:
-        movies_queryset = (
-            Movie.objects
-            .prefetch_related("genre")
-            .annotate(avg_rating=Avg("rating__value"))
-        )
+    def get_queryset(self) -> QuerySet[Movie]:
+        qs = Movie.objects.all()
 
         search_query = self.request.GET.get("q")
         if search_query:
-            movies_queryset = movies_queryset.filter(
-                title__icontains=search_query)
+            qs = qs.filter(title__icontains=search_query)
 
         selected_genres = self.request.GET.getlist("genre")
         if selected_genres:
-            for genre_id in selected_genres:
-                movies_queryset = movies_queryset.filter(genre__id=genre_id)
+            qs = qs.filter(genre__in=selected_genres)
 
         year_filter = self.request.GET.get("year")
-        if year_filter:
-            try:
-                year_filter = int(year_filter)
-                movies_queryset = movies_queryset.filter(year=year_filter)
-            except ValueError:
-                pass
+        if year_filter and year_filter.isdigit():
+            qs = qs.filter(year__lte=int(year_filter))
+
+        qs = qs.annotate(
+            avg_rating=Avg("rating__value")
+        )
 
         sort_option = self.request.GET.get("sort")
         if sort_option == "title":
-            movies_queryset = movies_queryset.order_by("title")
+            qs = qs.order_by("title")
         elif sort_option == "year":
-            movies_queryset = movies_queryset.order_by("-year")
+            qs = qs.order_by("-year")
         elif sort_option == "rating":
-            movies_queryset = movies_queryset.order_by("-avg_rating")
+            qs = qs.order_by("-avg_rating")
 
-        return movies_queryset
+        return qs.prefetch_related("genre").distinct()
 
     def get_context_data(self: "MovieListView",
                          **kwargs: Any
