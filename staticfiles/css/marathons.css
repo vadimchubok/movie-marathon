@@ -1,0 +1,121 @@
+.marathon-card {
+  background-color: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.marathon-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(90deg, #0d6efd, #6610f2);
+}
+
+.marathon-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Typography */
+.marathon-title {
+  color: #212529;
+  font-weight: 700;
+}
+
+.marathon-meta {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.marathon-info li {
+  padding: 2px 0;
+  color: #495057;
+}
+
+/* Button */
+.marathon-card .btn-outline-primary {
+  border-width: 2px;
+  font-weight: 600;
+}
+
+.marathon-card .btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: #ffffff;
+}
+
+/* Empty state */
+.marathons-empty {
+  background-color: #f8f9fa;
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.marathon-header h1 {
+  letter-spacing: -0.5px;
+}
+
+.marathon-card {
+  border-radius: 14px;
+  border: 1px solid #e3e6ea;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.marathon-card + .marathon-card {
+  margin-top: 1.5rem;
+}
+
+/* INFO LIST */
+.marathon-info li {
+  padding: 4px 0;
+  color: #444;
+}
+
+/* ACTIONS */
+.marathon-actions .btn {
+  font-weight: 500;
+}
+
+/* =========================
+   MOVIES GRID
+========================= */
+
+.marathon-movie-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e3e6ea;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.marathon-movie-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.marathon-movie-card img {
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+}
+
+.marathon-movie-card .card-body {
+  padding: 0.75rem;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 500;
+}
+
+.participant-badge {
+  font-size: 0.75rem;
+}
