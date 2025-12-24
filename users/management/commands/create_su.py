@@ -27,4 +27,4 @@ class Command(BaseCommand):
             password=password,
         )
 
-        self.stdout.write("🎉 Superuser created")
+        self.stdout.write("Superuser created")
