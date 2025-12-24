@@ -7,7 +7,6 @@ python manage.py collectstatic --no-input
 
 python manage.py migrate
 
-python manage.py create_su
-
 python manage.py add_to_base --flush
 
+python manage.py create_su
