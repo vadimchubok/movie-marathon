@@ -41,10 +41,22 @@
                 ✔ You joined
               </button>
             {% else %}
-              <a href="{% url 'marathons:join' marathon.id %}"
-                 class="btn btn-primary w-100 mb-2">
-                Join marathon
-              </a>
+              {% if is_joined %}
+                <button class="btn btn-success w-100 mb-2" disabled>
+                  ✔ You joined
+                </button>
+              {% else %}
+                <form
+                    method="post"
+                    action="{% url 'marathons:join' marathon.id %}"
+                >
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="btn btn-primary w-100 mb-2">
+                    Join marathon
+                  </button>
+                </form>
+              {% endif %}
             {% endif %}
 
             {% if user == marathon.curator %}
