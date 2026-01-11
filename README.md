@@ -74,7 +74,7 @@ python manage.py runserver
 | Username  | Password    |
 | --------- | ----------- |
 | Bob (No permisions until you create 10 comments) | 123qweAA |
-| admin (All permissions (including creating parathons) ) | 123qweAA |
+| admin (All permissions (including creating marathons) ) | 123qweAA |
 
 ---
 
