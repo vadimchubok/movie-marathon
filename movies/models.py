@@ -45,7 +45,7 @@ class UserRating(models.Model):
     movie = models.ForeignKey(
         Movie,
         on_delete=models.CASCADE,
-        related_name="rating"
+        related_name="ratings",
     )
 
 

@@ -3,7 +3,10 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from movies.models import Movie
-from marathons.models import Marathon, MarathonTicket
+from marathons.models import (
+    Marathon,
+    MarathonTicket
+)
 
 User = get_user_model()
 

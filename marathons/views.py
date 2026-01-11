@@ -15,12 +15,18 @@ from django.views.generic import (
 )
 
 from marathons.forms import MarathonForm
-from marathons.models import Marathon, MarathonTicket
+from marathons.models import (
+    Marathon,
+    MarathonTicket
+)
 from movies.models import Movie
 
 
 
-class MarathonListView(LoginRequiredMixin, ListView):
+class MarathonListView(
+    LoginRequiredMixin,
+    ListView
+):
     model = Marathon
     context_object_name = "marathons"
 
@@ -61,7 +67,10 @@ class MarathonCreateView(
         return reverse("marathons:list")
 
 
-class MarathonDetailView(LoginRequiredMixin, DetailView):
+class MarathonDetailView(
+    LoginRequiredMixin,
+    DetailView
+):
     model = Marathon
     context_object_name = "marathon"
 
@@ -125,7 +134,10 @@ class MarathonDeleteView(
         return redirect("marathons:list").url
 
 
-class JoinMarathonView(LoginRequiredMixin, View):
+class JoinMarathonView(
+    LoginRequiredMixin,
+    View
+):
     def post(
         self,
         request: HttpRequest,
@@ -143,7 +155,10 @@ class JoinMarathonView(LoginRequiredMixin, View):
         return redirect("marathons:detail", pk=marathon.id)
 
 
-class MarathonMovieSearchView(LoginRequiredMixin, View):
+class MarathonMovieSearchView(
+    LoginRequiredMixin,
+    View
+):
     def get(
         self,
         request: HttpRequest,

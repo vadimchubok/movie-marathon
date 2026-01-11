@@ -39,7 +39,6 @@
   color: #495057;
 }
 
-/* Button */
 .marathon-card .btn-outline-primary {
   border-width: 2px;
   font-weight: 600;
@@ -50,7 +49,6 @@
   color: #ffffff;
 }
 
-/* Empty state */
 .marathons-empty {
   background-color: #f8f9fa;
   border-radius: 16px;
@@ -73,20 +71,14 @@
   margin-top: 1.5rem;
 }
 
-/* INFO LIST */
 .marathon-info li {
   padding: 4px 0;
   color: #444;
 }
 
-/* ACTIONS */
 .marathon-actions .btn {
   font-weight: 500;
 }
-
-/* =========================
-   MOVIES GRID
-========================= */
 
 .marathon-movie-card {
   border-radius: 12px;

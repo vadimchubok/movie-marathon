@@ -1,19 +1,30 @@
 from typing import Any, Dict
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator
 from django.db.models import Avg, Count, QuerySet
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect
-from django.views.generic import DetailView, ListView
-from django.http import JsonResponse, HttpRequest, HttpResponse
-from django.views.decorators.http import require_GET
+from django.urls import reverse
+from django.views import View
+from django.views.generic import (
+    DeleteView,
+    DetailView,
+    ListView
+)
 
-from movies.models import Movie, UserRating, Genre, Review
+from movies.models import (
+    Movie,
+    UserRating,
+    Genre,
+    Review
+)
 from users.utils import update_user_status
 
 
 class MovieListView(ListView):
     model = Movie
-    template_name = "movies/movies_list.html"
     context_object_name = "movies_list"
     paginate_by = 32
 
@@ -30,10 +41,10 @@ class MovieListView(ListView):
 
         year_filter = self.request.GET.get("year")
         if year_filter and year_filter.isdigit():
-            qs = qs.filter(year__lte=int(year_filter))
+            qs = qs.filter(year=int(year_filter))
 
         qs = qs.annotate(
-            avg_rating=Avg("rating__value")
+            avg_rating=Avg("ratings__value")
         )
 
         sort_option = self.request.GET.get("sort")
@@ -46,9 +57,7 @@ class MovieListView(ListView):
 
         return qs.prefetch_related("genre").distinct()
 
-    def get_context_data(self: "MovieListView",
-                         **kwargs: Any
-                         ) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
 
         context["genres"] = Genre.objects.all()
@@ -61,15 +70,14 @@ class MovieListView(ListView):
 
 class MovieDetailView(DetailView):
     model = Movie
-    template_name = "movies/movie_detail.html"
-
     COMMENTS_PER_PAGE = 10
 
-    def post(self: "MovieDetailView",
-             request: HttpRequest,
-             *args: Any,
-             **kwargs: Any
-             ) -> HttpResponse:
+    def post(
+        self,
+        request: HttpRequest,
+        *args: Any,
+        **kwargs: Any
+    ) -> HttpResponse:
         movie = self.get_object()
 
         if not request.user.is_authenticated:
@@ -96,21 +104,19 @@ class MovieDetailView(DetailView):
 
         return redirect("movies:movie_detail", pk=movie.pk)
 
-    def get_context_data(self: "MovieDetailView",
-                         **kwargs: Any
-                         ) -> Dict[str, Any]:
+    def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
         movie = self.get_object()
 
         if self.request.user.is_authenticated:
             context["user_rating"] = UserRating.objects.filter(
-                author=self.request.user, movie=movie
+                author=self.request.user,
+                movie=movie,
             ).first()
 
         context["avg_rating"] = UserRating.objects.filter(
-            movie=movie).aggregate(
-            avg=Avg("value")
-        )["avg"]
+            movie=movie
+        ).aggregate(avg=Avg("value"))["avg"]
 
         frequent_reviewers = (
             Review.objects
@@ -141,17 +147,41 @@ class MovieDetailView(DetailView):
         return context
 
 
-@require_GET
-def movie_search(request: HttpRequest) -> HttpResponse:
-    search_query = request.GET.get("q", "").strip()
+class ReviewDeleteView(
+    LoginRequiredMixin,
+    DeleteView
+):
+    model = Review
 
-    if len(search_query) < 2:
-        return JsonResponse([], safe=False)
+    def get_success_url(self):
+        return reverse(
+            "movies:movie_detail",
+            kwargs={"pk": self.object.movie.pk},
+        )
 
-    movies = (
-        Movie.objects
-        .filter(title__icontains=search_query)
-        .values("id", "title", "year")[:10]
-    )
+    def dispatch(self, request, *args, **kwargs):
+        review = self.get_object()
 
-    return JsonResponse(list(movies), safe=False)
+        if request.user.is_staff:
+            return super().dispatch(request, *args, **kwargs)
+
+        if review.author != request.user:
+            raise PermissionDenied("You cannot delete this comment")
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class MovieSearchView(View):
+    def get(self, request: HttpRequest) -> JsonResponse:
+        search_query = request.GET.get("q", "").strip()
+
+        if len(search_query) < 2:
+            return JsonResponse([], safe=False)
+
+        movies = (
+            Movie.objects
+            .filter(title__icontains=search_query)
+            .values("id", "title", "year")[:10]
+        )
+
+        return JsonResponse(list(movies), safe=False)

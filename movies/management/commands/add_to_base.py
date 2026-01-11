@@ -85,7 +85,6 @@ class Command(BaseCommand):
                     except Exception:
                         genres = []
 
-                # 🔑 унікальні, очищені жанри
                 genres = list({str(g).strip() for g in genres if str(g).strip()})
                 genres_set.update(genres)
 
@@ -98,7 +97,6 @@ class Command(BaseCommand):
                     "genres": genres,
                 })
 
-        # ===== CREATE GENRES =====
         self.stdout.write(f"🎭 Creating {len(genres_set)} genres...")
         Genre.objects.bulk_create(
             [Genre(name=name) for name in genres_set],
@@ -109,7 +107,6 @@ class Command(BaseCommand):
             genre.name: genre for genre in Genre.objects.all()
         }
 
-        # ===== CREATE MOVIES =====
         self.stdout.write(f"🎬 Creating {len(movies_data)} movies...")
         movie_objs = [
             Movie(
@@ -124,7 +121,6 @@ class Command(BaseCommand):
 
         Movie.objects.bulk_create(movie_objs)
 
-        # ===== LINK M2M SAFELY =====
         self.stdout.write("🔗 Linking movies with genres...")
         through_model = Movie.genre.through
         m2m_links = []
@@ -147,7 +143,6 @@ class Command(BaseCommand):
             ignore_conflicts=True,
         )
 
-        # ===== SUMMARY =====
         self.stdout.write("")
         self.stdout.write("✅ IMPORT FINISHED")
         self.stdout.write(f"🎬 Movies in DB: {Movie.objects.count()}")

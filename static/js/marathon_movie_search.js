@@ -11,7 +11,6 @@ searchInput.addEventListener("input", async () => {
 
   if (q.length < 2) return;
 
-  // ⚡ змінено URL на правильний
   const res = await fetch(`/marathons/search_movies/?q=${q}`);
   const movies = await res.json();
 
