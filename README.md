@@ -114,10 +114,15 @@ movie-marathon/
 │   ├── __init__.py
 │   ├── asgi.py
 │   ├── assets/
-│   ├── settings.py
 │   ├── urls.py
 │   ├── views.py
 │   └── wsgi.py
+├── settings/             # Project settings
+│   ├── __init__.py
+│   ├── base.py
+│   ├── development.py
+│   ├── production.py
+│   └── tests.py
 ├── static/               # Static files (CSS, JS)
 │   ├── css/
 │   └── js/
