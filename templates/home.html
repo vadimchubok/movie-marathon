@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container py-5">
+
+    <div class="row align-items-center mb-5">
+      <div class="col-md-6">
+        <h1 class="display-5 fw-bold">
+          🎬 MovieMarathon
+        </h1>
+
+        <p class="lead text-muted mt-3">
+          MovieMarathon is a platform for discovering,
+          rating, and discussing movies.
+        </p>
+
+        <p>
+          Explore new films, write reviews,
+          rate movies, and become part of a movie community.
+        </p>
+
+        <a href="{% url 'movies:movie_list' %}"
+           class="btn btn-primary btn-lg mt-3">
+          Browse movies →
+        </a>
+      </div>
+
+      <div class="col-md-6 text-center">
+        <img src="https://cdn-icons-png.flaticon.com/512/777/777242.png"
+             class="img-fluid"
+             style="max-height: 280px;"
+             alt="Movies">
+      </div>
+    </div>
+
+    <div class="row text-center mb-5">
+
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h3>⭐ Ratings</h3>
+            <p class="text-muted">
+              Rate movies and see the average score
+              from the community.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h3>💬 Reviews</h3>
+            <p class="text-muted">
+              Write comments and full reviews.
+              Active users earn the Reviewer status.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h3>🎞 Discover</h3>
+            <p class="text-muted">
+              Find movies by genres and release years
+              and discover new stories.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center text-muted">
+      <p>
+        MovieMarathon — your personal movie guide 🍿
+      </p>
+    </div>
+
+  </div>
+{% endblock %}

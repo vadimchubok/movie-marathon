@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container py-4">
+
+    <div class="mb-4 marathon-header">
+      <h1 class="fw-bold">{{ marathon.title }}</h1>
+      <p class="text-muted">
+        Curated by <strong>{{ marathon.curator.username }}</strong>
+      </p>
+    </div>
+
+    <div class="row mb-5">
+
+      <div class="col-md-8">
+        <div class="card marathon-card mb-3">
+          <div class="card-body">
+
+            <h5 class="fw-semibold mb-2">Description</h5>
+            <p class="mb-3">
+              {{ marathon.description }}
+            </p>
+
+            <ul class="list-unstyled marathon-info">
+              <li>📅 <strong>Start:</strong> {{ marathon.start_date|date:"d M Y, H:i" }}</li>
+              <li>⏱ <strong>Duration:</strong> {{ marathon.total_duration }} min</li>
+              <li>🎞 <strong>Movies:</strong> {{ marathon.movies.count }}</li>
+              <li>👥 <strong>Participants:</strong> {{ marathon.participants.count }}</li>
+            </ul>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card marathon-card marathon-actions">
+          <div class="card-body">
+
+            {% if is_joined %}
+              <button class="btn btn-success w-100 mb-2" disabled>
+                ✔ You joined
+              </button>
+            {% else %}
+              {% if is_joined %}
+                <button class="btn btn-success w-100 mb-2" disabled>
+                  ✔ You joined
+                </button>
+              {% else %}
+                <form
+                    method="post"
+                    action="{% url 'marathons:join' marathon.id %}"
+                >
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="btn btn-primary w-100 mb-2">
+                    Join marathon
+                  </button>
+                </form>
+              {% endif %}
+            {% endif %}
+
+            {% if user == marathon.curator %}
+              <hr>
+              <a href="{% url 'marathons:edit' marathon.id %}"
+                 class="btn btn-outline-secondary w-100 mb-2">
+                Edit marathon
+              </a>
+
+              <a href="{% url 'marathons:delete' marathon.id %}"
+                 class="btn btn-outline-danger w-100">
+                Delete marathon
+              </a>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="mb-5">
+      <h3 class="fw-bold mb-3">🎞 Movies</h3>
+
+      <div class="row row-cols-2 row-cols-md-4 g-3">
+        {% for movie in marathon.movies.all %}
+          <div class="col">
+            <a href="{% url 'movies:movie_detail' movie.id %}"
+               class="text-decoration-none text-dark">
+
+              <div class="card h-100 marathon-movie-card">
+                <img src="{{ movie.poster_url }}"
+                     class="card-img-top"
+                     alt="{{ movie.title }}">
+
+                <div class="card-body">
+                  <h6 class="card-title mb-0">
+                    {{ movie.title }}
+                  </h6>
+                  <small class="text-muted">
+                    {{ movie.year }}
+                  </small>
+                </div>
+              </div>
+
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <h3 class="fw-bold mb-3">👥 Participants</h3>
+
+      {% if marathon.participants.exists %}
+        <ul class="list-group">
+          {% for participant in marathon.participants.all %}
+            <li class="list-group-item participant-item">
+            <span>
+              {{ participant.username }}
+              {% if participant == marathon.curator %}
+                <span class="badge bg-primary ms-2 participant-badge">
+                  Curator
+                </span>
+              {% endif %}
+            </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="text-muted">
+          No participants yet.
+        </p>
+      {% endif %}
+    </div>
+
+  </div>
+{% endblock %}
